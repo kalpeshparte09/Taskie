@@ -5,18 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Document</title>
+    <title>Task Manager</title>
 </head>
 
 <body>
-    <input id="tasktext" type="text">
-    <button onclick="addTask()">Add</button>
-
-    <div id="taskList">
-
+    <div class="container">
+       <header>TASKIE</header>
+        <div class="input-section">
+            <input id="tasktext" type="text">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <div id="taskList"> 
+        </div>
+        <p>*Click on task to Check/Uncheck</p>
+        <script src="app.js"></script>
     </div>
-
-    <script src="app.js"></script>
 </body>
 
 </html>
