@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Task Manager</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Taskie v2</title>
 </head>
-
 <body>
-    <div class="container">
-       <header>TASKIE</header>
-        <div class="input-section">
-            <input id="tasktext" type="text">
-            <button onclick="addTask()">Add</button>
-        </div>
-        <div id="taskList"> 
-        </div>
-        <p>*Click on task to Check/Uncheck</p>
-        <script src="app.js"></script>
-    </div>
-</body>
+  <main class="app" aria-label="Taskie app">
+    <header class="app-header">
+      <h1>TASKIE</h1>
+      <p>Simple, clean, and focused.</p>
+    </header>
 
+    <section class="composer" aria-label="Add task">
+      <input
+        id="taskInput"
+        type="text"
+        placeholder="Add a new task..."
+        aria-label="Task text"
+      />
+      <button id="addBtn" type="button">Add</button>
+    </section>
+
+    <section class="toolbar" aria-label="Task controls">
+      <div class="filters" role="tablist" aria-label="Filter tasks">
+        <button class="filter-btn active" data-filter="all" type="button">All</button>
+        <button class="filter-btn" data-filter="active" type="button">Active</button>
+        <button class="filter-btn" data-filter="completed" type="button">Completed</button>
+      </div>
+      <button id="clearCompletedBtn" class="clear-btn" type="button">Clear Completed</button>
+    </section>
+
+    <section class="status" aria-live="polite">
+      <span id="taskCount">0 tasks</span>
+    </section>
+
+    <section id="taskList" class="task-list" aria-label="Task list"></section>
+    <p id="emptyState" class="empty-state">No tasks yet. Add your first one above.</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
 </html>
