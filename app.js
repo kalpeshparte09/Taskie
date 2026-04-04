@@ -10,6 +10,11 @@ const taskCount = document.getElementById("taskCount");
 const emptyState = document.getElementById("emptyState");
 const filterButtons = document.querySelectorAll(".filter-btn");
 const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+const totalCount = document.getElementById("totalCount");
+const activeCount = document.getElementById("activeCount");
+const completedCount = document.getElementById("completedCount");
+const completionRate = document.getElementById("completionRate");
+const statusMessage = document.getElementById("statusMessage");
 
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
@@ -36,7 +41,31 @@ function loadTasks() {
 function updateStatus() {
   const total = tasks.length;
   const remaining = tasks.filter((task) => !task.completed).length;
-  taskCount.textContent = `${remaining} active, ${total - remaining} completed`;
+  const completed = total - remaining;
+  const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  taskCount.textContent = `${remaining} active, ${completed} completed`;
+  totalCount.textContent = String(total);
+  activeCount.textContent = String(remaining);
+  completedCount.textContent = String(completed);
+  completionRate.textContent = `${rate}%`;
+
+  if (total === 0) {
+    statusMessage.textContent = "No tasks yet. Add your first priority to get started.";
+    return;
+  }
+
+  if (remaining === 0) {
+    statusMessage.textContent = "Everything is complete. Nice work keeping the list clear.";
+    return;
+  }
+
+  if (completed === 0) {
+    statusMessage.textContent = "Fresh board. Start moving through the highest-impact work first.";
+    return;
+  }
+
+  statusMessage.textContent = "Progress is building. Keep the active list lean and focused.";
 }
 
 function getFilteredTasks() {
@@ -66,10 +95,23 @@ function renderTasks() {
     checkbox.setAttribute("aria-label", "Toggle task completion");
     checkbox.addEventListener("change", () => toggleTask(task.id));
 
+    const taskMain = document.createElement("div");
+    taskMain.className = "task-main";
+
     const textEl = document.createElement("p");
     textEl.className = "task-text";
     textEl.textContent = task.text;
     textEl.title = task.text;
+
+    const meta = document.createElement("div");
+    meta.className = "task-meta";
+
+    const badge = document.createElement("span");
+    badge.className = "task-badge";
+    badge.textContent = task.completed ? "Completed" : "In Progress";
+
+    meta.append(badge);
+    taskMain.append(textEl, meta);
 
     const actions = document.createElement("div");
     actions.className = "task-actions";
@@ -87,7 +129,7 @@ function renderTasks() {
     deleteBtn.addEventListener("click", () => deleteTask(task.id));
 
     actions.append(editBtn, deleteBtn);
-    item.append(checkbox, textEl, actions);
+    item.append(checkbox, taskMain, actions);
     taskList.append(item);
   });
 

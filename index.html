@@ -7,19 +7,41 @@
   <title>Taskie v2</title>
 </head>
 <body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
   <main class="app" aria-label="Taskie app">
     <header class="app-header">
-      <h1>TASKIE</h1>
-      <p>Simple, clean, and focused.</p>
+      <div class="brand-block">
+        <span class="eyebrow">Task Operations</span>
+        <h1>TASKIE</h1>
+        <p>Plan work, track momentum, and keep your day under control.</p>
+      </div>
+      <section class="overview-grid" aria-label="Task summary">
+        <article class="overview-card">
+          <span class="overview-label">Total Tasks</span>
+          <strong id="totalCount" class="overview-value">0</strong>
+        </article>
+        <article class="overview-card">
+          <span class="overview-label">In Progress</span>
+          <strong id="activeCount" class="overview-value">0</strong>
+        </article>
+        <article class="overview-card">
+          <span class="overview-label">Completed</span>
+          <strong id="completedCount" class="overview-value">0</strong>
+        </article>
+      </section>
     </header>
 
     <section class="composer" aria-label="Add task">
-      <input
-        id="taskInput"
-        type="text"
-        placeholder="Add a new task..."
-        aria-label="Task text"
-      />
+      <label class="composer-field">
+        <span class="sr-only">Task text</span>
+        <input
+          id="taskInput"
+          type="text"
+          placeholder="Add a new task..."
+          aria-label="Task text"
+        />
+      </label>
       <button id="addBtn" type="button">Add</button>
     </section>
 
@@ -33,11 +55,18 @@
     </section>
 
     <section class="status" aria-live="polite">
-      <span id="taskCount">0 tasks</span>
+      <div>
+        <span id="taskCount">0 active, 0 completed</span>
+        <p id="statusMessage" class="status-message">No tasks yet. Add your first priority to get started.</p>
+      </div>
+      <div class="progress-chip">
+        <span>Completion</span>
+        <strong id="completionRate">0%</strong>
+      </div>
     </section>
 
     <section id="taskList" class="task-list" aria-label="Task list"></section>
-    <p id="emptyState" class="empty-state">No tasks yet. Add your first one above.</p>
+    <p id="emptyState" class="empty-state">No tasks yet. Add your first priority and Taskie will keep the board organized.</p>
   </main>
 
   <script src="app.js"></script>
