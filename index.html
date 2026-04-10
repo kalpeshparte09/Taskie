@@ -42,6 +42,14 @@
           aria-label="Task text"
         />
       </label>
+      <label class="priority-field">
+        <span class="sr-only">Task priority</span>
+        <select id="prioritySelect" aria-label="Task priority">
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+          <option value="low">Low Priority</option>
+        </select>
+      </label>
       <button id="addBtn" type="button">Add</button>
     </section>
 
@@ -51,7 +59,10 @@
         <button class="filter-btn" data-filter="active" type="button">Active</button>
         <button class="filter-btn" data-filter="completed" type="button">Completed</button>
       </div>
-      <button id="clearCompletedBtn" class="clear-btn" type="button">Clear Completed</button>
+      <div class="toolbar-actions">
+        <button id="sortPriorityBtn" class="utility-btn" type="button">High Priority First</button>
+        <button id="clearCompletedBtn" class="clear-btn" type="button">Clear Completed</button>
+      </div>
     </section>
 
     <section class="status" aria-live="polite">

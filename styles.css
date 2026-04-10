@@ -129,12 +129,16 @@ body {
 
 .composer {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) 180px auto;
   gap: 12px;
   margin-top: 24px;
 }
 
 .composer-field {
+  display: block;
+}
+
+.priority-field {
   display: block;
 }
 
@@ -171,6 +175,23 @@ body {
   border-color: var(--brand);
 }
 
+#prioritySelect {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 0 14px;
+  font-size: 0.96rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  appearance: none;
+}
+
+#prioritySelect:focus {
+  outline: 2px solid rgba(55, 198, 166, 0.2);
+  border-color: var(--brand);
+}
+
 #addBtn {
   border: none;
   border-radius: 16px;
@@ -194,6 +215,13 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -232,6 +260,22 @@ body {
 
 .clear-btn:hover {
   background: rgba(255, 107, 107, 0.22);
+}
+
+.utility-btn {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.utility-btn.active {
+  background: rgba(79, 145, 255, 0.16);
+  border-color: rgba(79, 145, 255, 0.3);
+  color: #dce9ff;
 }
 
 .status {
@@ -294,6 +338,19 @@ body {
   transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
 }
 
+.task-item.priority-high {
+  border-color: rgba(255, 156, 110, 0.34);
+  box-shadow: inset 3px 0 0 rgba(255, 156, 110, 0.8);
+}
+
+.task-item.priority-medium {
+  box-shadow: inset 3px 0 0 rgba(55, 198, 166, 0.65);
+}
+
+.task-item.priority-low {
+  box-shadow: inset 3px 0 0 rgba(120, 144, 164, 0.55);
+}
+
 .task-item:hover {
   transform: translateY(-1px);
   border-color: rgba(163, 184, 204, 0.28);
@@ -319,6 +376,24 @@ body {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.task-badge.priority-high {
+  background: rgba(255, 156, 110, 0.16);
+  border-color: rgba(255, 156, 110, 0.26);
+  color: #ffd4bd;
+}
+
+.task-badge.priority-medium {
+  background: rgba(55, 198, 166, 0.16);
+  border-color: rgba(55, 198, 166, 0.26);
+  color: #c9fff0;
+}
+
+.task-badge.priority-low {
+  background: rgba(148, 169, 189, 0.14);
+  border-color: rgba(148, 169, 189, 0.22);
+  color: #d5e2ee;
 }
 
 .task-item.completed .task-text {
@@ -408,6 +483,10 @@ body {
 
   .composer {
     grid-template-columns: 1fr;
+  }
+
+  #prioritySelect {
+    min-height: 48px;
   }
 
   #addBtn {

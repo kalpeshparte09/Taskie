@@ -4,17 +4,33 @@ let tasks = [];
 let currentFilter = "all";
 
 const taskInput = document.getElementById("taskInput");
+const prioritySelect = document.getElementById("prioritySelect");
 const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
 const taskCount = document.getElementById("taskCount");
 const emptyState = document.getElementById("emptyState");
 const filterButtons = document.querySelectorAll(".filter-btn");
 const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+const sortPriorityBtn = document.getElementById("sortPriorityBtn");
 const totalCount = document.getElementById("totalCount");
 const activeCount = document.getElementById("activeCount");
 const completedCount = document.getElementById("completedCount");
 const completionRate = document.getElementById("completionRate");
 const statusMessage = document.getElementById("statusMessage");
+
+const priorityRank = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
+const priorityLabels = {
+  high: "High Priority",
+  medium: "Medium Priority",
+  low: "Low Priority",
+};
+
+let sortByPriority = false;
 
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
@@ -31,6 +47,7 @@ function loadTasks() {
         id: task.id || crypto.randomUUID(),
         text: typeof task.text === "string" ? task.text : "",
         completed: Boolean(task.completed),
+        priority: priorityLabels[task.priority] ? task.priority : "medium",
       }));
     }
   } catch {
@@ -42,6 +59,9 @@ function updateStatus() {
   const total = tasks.length;
   const remaining = tasks.filter((task) => !task.completed).length;
   const completed = total - remaining;
+  const highPriorityOpen = tasks.filter(
+    (task) => !task.completed && task.priority === "high"
+  ).length;
   const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   taskCount.textContent = `${remaining} active, ${completed} completed`;
@@ -61,32 +81,47 @@ function updateStatus() {
   }
 
   if (completed === 0) {
-    statusMessage.textContent = "Fresh board. Start moving through the highest-impact work first.";
+    statusMessage.textContent = highPriorityOpen > 0
+      ? `Fresh board. ${highPriorityOpen} high-priority task${highPriorityOpen === 1 ? "" : "s"} waiting.`
+      : "Fresh board. Start moving through the highest-impact work first.";
     return;
   }
 
-  statusMessage.textContent = "Progress is building. Keep the active list lean and focused.";
+  statusMessage.textContent = highPriorityOpen > 0
+    ? `Progress is building. ${highPriorityOpen} high-priority task${highPriorityOpen === 1 ? "" : "s"} still need attention.`
+    : "Progress is building. Keep the active list lean and focused.";
 }
 
 function getFilteredTasks() {
+  let filtered = tasks;
+
   if (currentFilter === "active") {
-    return tasks.filter((task) => !task.completed);
+    filtered = tasks.filter((task) => !task.completed);
+  } else if (currentFilter === "completed") {
+    filtered = tasks.filter((task) => task.completed);
   }
-  if (currentFilter === "completed") {
-    return tasks.filter((task) => task.completed);
+
+  if (!sortByPriority) {
+    return filtered;
   }
-  return tasks;
+
+  return [...filtered].sort((a, b) => {
+    const priorityDiff = priorityRank[a.priority] - priorityRank[b.priority];
+    if (priorityDiff !== 0) return priorityDiff;
+    return Number(a.completed) - Number(b.completed);
+  });
 }
 
 function renderTasks() {
   taskList.innerHTML = "";
+  sortPriorityBtn.classList.toggle("active", sortByPriority);
 
   const filtered = getFilteredTasks();
   emptyState.classList.toggle("hidden", filtered.length > 0);
 
   filtered.forEach((task) => {
     const item = document.createElement("article");
-    item.className = `task-item ${task.completed ? "completed" : ""}`;
+    item.className = `task-item priority-${task.priority} ${task.completed ? "completed" : ""}`;
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -110,7 +145,11 @@ function renderTasks() {
     badge.className = "task-badge";
     badge.textContent = task.completed ? "Completed" : "In Progress";
 
-    meta.append(badge);
+    const priorityBadge = document.createElement("span");
+    priorityBadge.className = `task-badge priority-${task.priority}`;
+    priorityBadge.textContent = priorityLabels[task.priority];
+
+    meta.append(badge, priorityBadge);
     taskMain.append(textEl, meta);
 
     const actions = document.createElement("div");
@@ -144,9 +183,11 @@ function addTask() {
     id: crypto.randomUUID(),
     text,
     completed: false,
+    priority: prioritySelect.value,
   });
 
   taskInput.value = "";
+  prioritySelect.value = "medium";
   saveTasks();
   renderTasks();
 }
@@ -205,6 +246,11 @@ function clearCompleted() {
   renderTasks();
 }
 
+function togglePrioritySort() {
+  sortByPriority = !sortByPriority;
+  renderTasks();
+}
+
 function setFilter(nextFilter) {
   currentFilter = nextFilter;
   filterButtons.forEach((button) => {
@@ -223,6 +269,7 @@ filterButtons.forEach((button) => {
 });
 
 clearCompletedBtn.addEventListener("click", clearCompleted);
+sortPriorityBtn.addEventListener("click", togglePrioritySort);
 
 loadTasks();
 renderTasks();
