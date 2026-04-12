@@ -7,6 +7,7 @@
   <title>Taskie v2</title>
 </head>
 <body>
+  <div class="grid-overlay" aria-hidden="true"></div>
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
   <main class="app" aria-label="Taskie app">
@@ -15,7 +16,17 @@
         <span class="eyebrow">Task Operations</span>
         <h1>TASKIE</h1>
         <p>Plan work, track momentum, and keep your day under control.</p>
+        <div class="brand-pills" aria-label="Highlights">
+          <span>Fast capture</span>
+          <span>Priority aware</span>
+          <span>Daily momentum</span>
+        </div>
       </div>
+      <aside class="hero-note" aria-label="Product overview">
+        <span class="hero-note-label">Focus Mode</span>
+        <strong>Move the important work first.</strong>
+        <p>Keep urgent tasks visible, trim finished work, and let the board stay readable all day.</p>
+      </aside>
       <section class="overview-grid" aria-label="Task summary">
         <article class="overview-card">
           <span class="overview-label">Total Tasks</span>
@@ -66,9 +77,19 @@
     </section>
 
     <section class="status" aria-live="polite">
-      <div>
+      <div class="status-copy">
         <span id="taskCount">0 active, 0 completed</span>
         <p id="statusMessage" class="status-message">No tasks yet. Add your first priority to get started.</p>
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Task completion progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+        >
+          <span id="progressFill" class="progress-fill"></span>
+        </div>
       </div>
       <div class="progress-chip">
         <span>Completion</span>

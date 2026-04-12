@@ -17,6 +17,8 @@ const activeCount = document.getElementById("activeCount");
 const completedCount = document.getElementById("completedCount");
 const completionRate = document.getElementById("completionRate");
 const statusMessage = document.getElementById("statusMessage");
+const progressTrack = document.querySelector(".progress-track");
+const progressFill = document.getElementById("progressFill");
 
 const priorityRank = {
   high: 0,
@@ -69,6 +71,8 @@ function updateStatus() {
   activeCount.textContent = String(remaining);
   completedCount.textContent = String(completed);
   completionRate.textContent = `${rate}%`;
+  progressFill.style.width = `${rate}%`;
+  progressTrack.setAttribute("aria-valuenow", String(rate));
 
   if (total === 0) {
     statusMessage.textContent = "No tasks yet. Add your first priority to get started.";
