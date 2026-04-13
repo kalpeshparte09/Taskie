@@ -1,30 +1,4 @@
-const STORAGE_KEY = "taskie_tasks_v2";
-
-let tasks = [];
-let currentFilter = "all";
-
-const taskInput = document.getElementById("taskInput");
-const prioritySelect = document.getElementById("prioritySelect");
-const addBtn = document.getElementById("addBtn");
-const taskList = document.getElementById("taskList");
-const taskCount = document.getElementById("taskCount");
-const emptyState = document.getElementById("emptyState");
-const filterButtons = document.querySelectorAll(".filter-btn");
-const clearCompletedBtn = document.getElementById("clearCompletedBtn");
-const sortPriorityBtn = document.getElementById("sortPriorityBtn");
-const totalCount = document.getElementById("totalCount");
-const activeCount = document.getElementById("activeCount");
-const completedCount = document.getElementById("completedCount");
-const completionRate = document.getElementById("completionRate");
-const statusMessage = document.getElementById("statusMessage");
-const progressTrack = document.querySelector(".progress-track");
-const progressFill = document.getElementById("progressFill");
-
-const priorityRank = {
-  high: 0,
-  medium: 1,
-  low: 2,
-};
+const STORAGE_KEY = "taskie.tasks";
 
 const priorityLabels = {
   high: "High Priority",
@@ -32,7 +6,38 @@ const priorityLabels = {
   low: "Low Priority",
 };
 
+const priorityRank = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
+const taskInput = document.getElementById("taskInput");
+const prioritySelect = document.getElementById("prioritySelect");
+const addBtn = document.getElementById("addBtn");
+const taskList = document.getElementById("taskList");
+const emptyState = document.getElementById("emptyState");
+const taskCount = document.getElementById("taskCount");
+const totalCount = document.getElementById("totalCount");
+const activeCount = document.getElementById("activeCount");
+const completedCount = document.getElementById("completedCount");
+const statusMessage = document.getElementById("statusMessage");
+const progressTrack = document.querySelector(".progress-track");
+const progressFill = document.getElementById("progressFill");
+const completionRate = document.getElementById("completionRate");
+const sortPriorityBtn = document.getElementById("sortPriorityBtn");
+const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
+
+let tasks = [];
+let currentFilter = "all";
 let sortByPriority = false;
+
+function createTaskId() {
+  return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
 
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
@@ -44,9 +49,10 @@ function loadTasks() {
 
   try {
     const parsed = JSON.parse(saved);
+
     if (Array.isArray(parsed)) {
       tasks = parsed.map((task) => ({
-        id: task.id || crypto.randomUUID(),
+        id: task.id || createTaskId(),
         text: typeof task.text === "string" ? task.text : "",
         completed: Boolean(task.completed),
         priority: priorityLabels[task.priority] ? task.priority : "medium",
@@ -75,25 +81,33 @@ function updateStatus() {
   progressTrack.setAttribute("aria-valuenow", String(rate));
 
   if (total === 0) {
-    statusMessage.textContent = "No tasks yet. Add your first priority to get started.";
+    statusMessage.textContent =
+      "No tasks yet. Add your first priority to get started.";
     return;
   }
 
   if (remaining === 0) {
-    statusMessage.textContent = "Everything is complete. Nice work keeping the list clear.";
+    statusMessage.textContent =
+      "Everything is complete. Nice work keeping the list clear.";
     return;
   }
 
   if (completed === 0) {
-    statusMessage.textContent = highPriorityOpen > 0
-      ? `Fresh board. ${highPriorityOpen} high-priority task${highPriorityOpen === 1 ? "" : "s"} waiting.`
-      : "Fresh board. Start moving through the highest-impact work first.";
+    statusMessage.textContent =
+      highPriorityOpen > 0
+        ? `Fresh board. ${highPriorityOpen} high-priority task${
+            highPriorityOpen === 1 ? "" : "s"
+          } waiting.`
+        : "Fresh board. Start moving through the highest-impact work first.";
     return;
   }
 
-  statusMessage.textContent = highPriorityOpen > 0
-    ? `Progress is building. ${highPriorityOpen} high-priority task${highPriorityOpen === 1 ? "" : "s"} still need attention.`
-    : "Progress is building. Keep the active list lean and focused.";
+  statusMessage.textContent =
+    highPriorityOpen > 0
+      ? `Progress is building. ${highPriorityOpen} high-priority task${
+          highPriorityOpen === 1 ? "" : "s"
+        } still need attention.`
+      : "Progress is building. Keep the active list lean and focused.";
 }
 
 function getFilteredTasks() {
@@ -112,6 +126,7 @@ function getFilteredTasks() {
   return [...filtered].sort((a, b) => {
     const priorityDiff = priorityRank[a.priority] - priorityRank[b.priority];
     if (priorityDiff !== 0) return priorityDiff;
+
     return Number(a.completed) - Number(b.completed);
   });
 }
@@ -125,7 +140,9 @@ function renderTasks() {
 
   filtered.forEach((task) => {
     const item = document.createElement("article");
-    item.className = `task-item priority-${task.priority} ${task.completed ? "completed" : ""}`;
+    item.className = `task-item priority-${task.priority} ${
+      task.completed ? "completed" : ""
+    }`;
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -184,7 +201,7 @@ function addTask() {
   if (!text) return;
 
   tasks.unshift({
-    id: crypto.randomUUID(),
+    id: createTaskId(),
     text,
     completed: false,
     priority: prioritySelect.value,
@@ -192,20 +209,24 @@ function addTask() {
 
   taskInput.value = "";
   prioritySelect.value = "medium";
+
   saveTasks();
   renderTasks();
+  taskInput.focus();
 }
 
 function toggleTask(taskId) {
   tasks = tasks.map((task) =>
     task.id === taskId ? { ...task, completed: !task.completed } : task
   );
+
   saveTasks();
   renderTasks();
 }
 
 function deleteTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
+
   saveTasks();
   renderTasks();
 }
@@ -221,6 +242,7 @@ function startEdit(taskId, textElement) {
 
   const commitEdit = () => {
     const nextText = input.value.trim();
+
     if (!nextText) {
       renderTasks();
       return;
@@ -229,6 +251,7 @@ function startEdit(taskId, textElement) {
     tasks = tasks.map((task) =>
       task.id === taskId ? { ...task, text: nextText } : task
     );
+
     saveTasks();
     renderTasks();
   };
@@ -237,6 +260,7 @@ function startEdit(taskId, textElement) {
     if (event.key === "Enter") commitEdit();
     if (event.key === "Escape") renderTasks();
   });
+
   input.addEventListener("blur", commitEdit);
 
   textElement.replaceWith(input);
@@ -246,6 +270,7 @@ function startEdit(taskId, textElement) {
 
 function clearCompleted() {
   tasks = tasks.filter((task) => !task.completed);
+
   saveTasks();
   renderTasks();
 }
@@ -257,23 +282,26 @@ function togglePrioritySort() {
 
 function setFilter(nextFilter) {
   currentFilter = nextFilter;
+
   filterButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.filter === nextFilter);
   });
+
   renderTasks();
 }
 
 addBtn.addEventListener("click", addTask);
 taskInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") addTask();
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addTask();
+  }
 });
-
+sortPriorityBtn.addEventListener("click", togglePrioritySort);
+clearCompletedBtn.addEventListener("click", clearCompleted);
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => setFilter(button.dataset.filter));
 });
-
-clearCompletedBtn.addEventListener("click", clearCompleted);
-sortPriorityBtn.addEventListener("click", togglePrioritySort);
 
 loadTasks();
 renderTasks();
